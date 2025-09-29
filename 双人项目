@@ -1,0 +1,292 @@
+import java.util.Scanner;
+
+// 图形接口，定义计算面积、周长和打印图形的方法
+interface Shape {
+    double calculateArea();
+    double calculatePerimeter();
+    void printShape();
+}
+
+// 菱形类
+class Rhombus implements Shape {
+    private double diagonal1; // 对角线1
+    private double diagonal2; // 对角线2
+    private double side; // 边长（用于周长计算和图形打印）
+
+    public Rhombus(double diagonal1, double diagonal2) {
+        this.diagonal1 = diagonal1;
+        this.diagonal2 = diagonal2;
+        // 计算边长，菱形边长 = √[(d1/2)² + (d2/2)²]
+        this.side = Math.sqrt(Math.pow(diagonal1 / 2, 2) + Math.pow(diagonal2 / 2, 2));
+    }
+
+    @Override
+    public double calculateArea() {
+        return 0.5 * diagonal1 * diagonal2;
+    }
+
+    @Override
+    public double calculatePerimeter() {
+        return 4 * side;
+    }
+
+    @Override
+    public void printShape() {
+        int d1 = (int) Math.ceil(diagonal1);
+        int d2 = (int) Math.ceil(diagonal2);
+        int halfD1 = d1 / 2;
+        int halfD2 = d2 / 2;
+        int maxRow = halfD2 + 1;
+        int maxCol = halfD1 + 1;
+
+        for (int i = 0; i < maxRow; i++) {
+            int stars = 2 * i + 1;
+            if (stars > d1) stars = d1;
+            int spaces = (d1 - stars) / 2;
+            for (int j = 0; j < spaces; j++) {
+                System.out.print(" ");
+            }
+            for (int j = 0; j < stars; j++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+        for (int i = maxRow - 2; i >= 0; i--) {
+            int stars = 2 * i + 1;
+            if (stars > d1) stars = d1;
+            int spaces = (d1 - stars) / 2;
+            for (int j = 0; j < spaces; j++) {
+                System.out.print(" ");
+            }
+            for (int j = 0; j < stars; j++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    }
+}
+
+// 正方形类（保持不变）
+class Square implements Shape {
+    private double side;
+
+    public Square(double side) {
+        this.side = side;
+    }
+
+    @Override
+    public double calculateArea() {
+        return side * side;
+    }
+
+    @Override
+    public double calculatePerimeter() {
+        return 4 * side;
+    }
+
+    @Override
+    public void printShape() {
+        int length = (int) side;
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < length; j++) {
+                if (i == 0 || i == length - 1 || j == 0 || j == length - 1) {
+                    System.out.print("*");
+                } else {
+                    System.out.print(" ");
+                }
+            }
+            System.out.println();
+        }
+    }
+}
+
+// 三角形类（等腰直角三角形，保持不变）
+class Triangle implements Shape {
+    private double side;
+
+    public Triangle(double side) {
+        this.side = side;
+    }
+
+    @Override
+    public double calculateArea() {
+        return 0.5 * side * side;
+    }
+
+    @Override
+    public double calculatePerimeter() {
+        return 2 * side + Math.sqrt(2) * side;
+    }
+
+    @Override
+    public void printShape() {
+        int length = (int) side;
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j <= i; j++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    }
+}
+
+// 长方形类（保持不变）
+class Rectangle implements Shape {
+    private double length;
+    private double width;
+
+    public Rectangle(double length, double width) {
+        this.length = length;
+        this.width = width;
+    }
+
+    @Override
+    public double calculateArea() {
+        return length * width;
+    }
+
+    @Override
+    public double calculatePerimeter() {
+        return 2 * (length + width);
+    }
+
+    @Override
+    public void printShape() {
+        int len = (int) length;
+        int wid = (int) width;
+        for (int i = 0; i < wid; i++) {
+            for (int j = 0; j < len; j++) {
+                if (i == 0 || i == wid - 1 || j == 0 || j == len - 1) {
+                    System.out.print("*");
+                } else {
+                    System.out.print(" ");
+                }
+            }
+            System.out.println();
+        }
+    }
+}
+
+// 梯形类（等腰，保持不变）
+class Trapezoid implements Shape {
+    private double topBase;
+    private double bottomBase;
+    private double height;
+
+    public Trapezoid(double topBase, double bottomBase, double height) {
+        this.topBase = topBase;
+        this.bottomBase = bottomBase;
+        this.height = height;
+    }
+
+    @Override
+    public double calculateArea() {
+        return 0.5 * (topBase + bottomBase) * height;
+    }
+
+    @Override
+    public double calculatePerimeter() {
+        double waist = Math.sqrt(Math.pow((bottomBase - topBase) / 2, 2) + Math.pow(height, 2));
+        return topBase + bottomBase + 2 * waist;
+    }
+
+    @Override
+    public void printShape() {
+        int top = (int) topBase;
+        int bottom = (int) bottomBase;
+        int h = (int) height;
+        int offset = (bottom - top) / 2;
+        for (int i = 0; i < h; i++) {
+            int currentBase = top + i * (bottom - top) / (h - 1);
+            for (int j = 0; j < offset - i; j++) {
+                System.out.print(" ");
+            }
+            for (int j = 0; j < currentBase; j++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    }
+}
+
+// 主类
+public class ShapeCalculator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("请选择图形：");
+            System.out.println("1. 菱形"); 
+            System.out.println("2. 正方形");
+            System.out.println("3. 三角形（等腰直角）");
+            System.out.println("4. 长方形");
+            System.out.println("5. 梯形（等腰）");
+            System.out.println("0. 退出");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("请输入菱形的横向对角线长度：");
+                    double diag1 = scanner.nextDouble();
+                    System.out.print("请输入菱形的纵向对角线长度：");
+                    double diag2 = scanner.nextDouble();
+                    Rhombus rhombus = new Rhombus(diag1, diag2);
+                    System.out.println("菱形面积：" + rhombus.calculateArea());
+                    System.out.println("菱形周长：" + rhombus.calculatePerimeter());
+                    System.out.println("菱形图形：");
+                    rhombus.printShape();
+                    break;
+                case 2:
+                    System.out.print("请输入正方形的边长：");
+                    double side = scanner.nextDouble();
+                    Square square = new Square(side);
+                    System.out.println("正方形面积：" + square.calculateArea());
+                    System.out.println("正方形周长：" + square.calculatePerimeter());
+                    System.out.println("正方形图形：");
+                    square.printShape();
+                    break;
+                case 3:
+                    System.out.print("请输入三角形的直角边长：");
+                    double triangleSide = scanner.nextDouble();
+                    Triangle triangle = new Triangle(triangleSide);
+                    System.out.println("三角形面积：" + triangle.calculateArea());
+                    System.out.println("三角形周长：" + triangle.calculatePerimeter());
+                    System.out.println("三角形图形：");
+                    triangle.printShape();
+                    break;
+                case 4:
+                    System.out.print("请输入长方形的长：");
+                    double length = scanner.nextDouble();
+                    System.out.print("请输入长方形的宽：");
+                    double width = scanner.nextDouble();
+                    Rectangle rectangle = new Rectangle(length, width);
+                    System.out.println("长方形面积：" + rectangle.calculateArea());
+                    System.out.println("长方形周长：" + rectangle.calculatePerimeter());
+                    System.out.println("长方形图形：");
+                    rectangle.printShape();
+                    break;
+                case 5:
+                    System.out.print("请输入梯形的上底：");
+                    double topBase = scanner.nextDouble();
+                    System.out.print("请输入梯形的下底：");
+                    double bottomBase = scanner.nextDouble();
+                    System.out.print("请输入梯形的高：");
+                    double height = scanner.nextDouble();
+                    Trapezoid trapezoid = new Trapezoid(topBase, bottomBase, height);
+                    System.out.println("梯形面积：" + trapezoid.calculateArea());
+                    System.out.println("梯形周长：" + trapezoid.calculatePerimeter());
+                    System.out.println("梯形图形：");
+                    trapezoid.printShape();
+                    break;
+                case 0:
+                    System.out.println("程序退出。");
+                    break;
+                default:
+                    System.out.println("无效选择，请重新输入。");
+            }
+        } while (choice != 0);
+
+        scanner.close();
+    }
+}
